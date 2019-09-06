@@ -413,8 +413,7 @@ prof_log_start(tsdn_t *tsdn, const char *filename) {
 		ret = true;
 	} else if (filename == NULL) {
 		/* Make default name. */
-		malloc_snprintf(log_filename, buf_size, "%s.%d.%"FMTu64".json",
-		    opt_prof_prefix, prof_getpid(), log_seq);
+    prof_get_default_json(tsdn, log_filename, log_seq);
 		log_seq++;
 		prof_logging_state = prof_logging_state_started;
 	} else if (strlen(filename) >= buf_size) {

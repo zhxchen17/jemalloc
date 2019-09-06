@@ -148,6 +148,7 @@ CTL_PROTO(prof_thread_active_init)
 CTL_PROTO(prof_active)
 CTL_PROTO(prof_dump)
 CTL_PROTO(prof_gdump)
+CTL_PROTO(prof_dump_prefix)
 CTL_PROTO(prof_reset)
 CTL_PROTO(prof_interval)
 CTL_PROTO(lg_prof_sample)
@@ -413,6 +414,7 @@ static const ctl_named_node_t	prof_node[] = {
 	{NAME("active"),	CTL(prof_active)},
 	{NAME("dump"),		CTL(prof_dump)},
 	{NAME("gdump"),		CTL(prof_gdump)},
+	{NAME("dump_prefix"), CTL(prof_dump_prefix)},
 	{NAME("reset"),		CTL(prof_reset)},
 	{NAME("interval"),	CTL(prof_interval)},
 	{NAME("lg_sample"),	CTL(lg_prof_sample)},
@@ -2716,6 +2718,25 @@ prof_gdump_ctl(tsd_t *tsd, const size_t *mib, size_t miblen,
 		oldval = prof_gdump_get(tsd_tsdn(tsd));
 	}
 	READ(oldval, bool);
+
+	ret = 0;
+label_return:
+	return ret;
+}
+
+static int
+prof_dump_prefix_ctl(tsd_t *tsd, const size_t *mib, size_t miblen,
+    void *oldp, size_t *oldlenp, void *newp, size_t newlen) {
+	int ret;
+	const char *prefix = NULL;
+
+	if (!config_prof) {
+		return ENOENT;
+	}
+
+	WRITEONLY();
+	WRITE(prefix, const char *);
+	prof_dump_prefix_set(tsd_tsdn(tsd), prefix);
 
 	ret = 0;
 label_return:
